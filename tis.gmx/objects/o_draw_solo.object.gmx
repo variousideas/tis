@@ -81,32 +81,37 @@ arr = test();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>//place meeting?
-/*
+            <string>/*
+place meeting?
 down to left
-&gt; 188,height
-
 right to down
-&gt; width, 188
-
 up to right
-&gt; 162,0
-
 left to up
-&gt; 0,162
 */
 
 if sprite_region(s_btn_cars,room_width/5,room_height-64) {
-    instance_create(188,road_width,o_car_universial);
+    with (instance_create(188,road_width,o_car_universial)) {
+        angle_plus = 90;
+        path_start(down_left,1,0,0);
+    }
 }
 else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
-    instance_create(road_width,162,o_car_universial);
+    with (instance_create(road_width,162,o_car_universial)) {
+        angle_plus = 180;
+        path_start(right_down,1,0,0);
+    }
 }
 else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
-    instance_create(162,0,o_car_universial);
+    with (instance_create(162,0,o_car_universial)) {
+        angle_plus = -90;
+        path_start(up_right,1,0,0);
+    }
 }
 else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
-    instance_create(0,188,o_car_universial);
+    with (instance_create(0,188,o_car_universial)) {
+        angle_plus = 0;
+        path_start(left_up,1,0,0);
+    }
 }
 </string>
           </argument>

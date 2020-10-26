@@ -26,8 +26,8 @@
           <argument>
             <kind>1</kind>
             <string>pos = 0;
-
-//path_start(left_up,1,0,0);
+is_collipse = 0;
+//angle_plus = 0
 </string>
           </argument>
         </arguments>
@@ -50,12 +50,42 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
+            <string>if is_collipse == 0
+    path_speed = 1;
+
+if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
     pos = 5/2*(path_position - 0.3);
 }
 if (path_position &gt; 0.7)
     pos = 1;
-image_angle = 90 * pos;*/
+
+image_angle = 90 * pos + angle_plus;
+
+is_collipse = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="o_car_universial">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>path_speed = 0;
+is_collipse = 1;
 </string>
           </argument>
         </arguments>
@@ -78,8 +108,7 @@ image_angle = 90 * pos;*/
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>show_message(x);
-show_message(y);
+            <string>instance_destroy();
 </string>
           </argument>
         </arguments>
