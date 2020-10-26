@@ -25,11 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>x = 0;
-y = 188;
-pos = 0;
+            <string>pos = 0;
 
-path_start(left_up,1,0,0);
+//path_start(left_up,1,0,0);
 </string>
           </argument>
         </arguments>
@@ -52,12 +50,12 @@ path_start(left_up,1,0,0);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
+            <string>/*if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
     pos = 5/2*(path_position - 0.3);
 }
 if (path_position &gt; 0.7)
     pos = 1;
-image_angle = 90 * pos;
+image_angle = 90 * pos;*/
 </string>
           </argument>
         </arguments>

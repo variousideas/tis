@@ -4,10 +4,10 @@ down to left
 > 188,height
 
 right to down
-> width, 188
+> width, 162
 
 up to right
 > 162,0
 
 left to up
-> 0,162
+> 0,188
