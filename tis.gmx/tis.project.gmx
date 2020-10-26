@@ -10,13 +10,14 @@
     <sprite>sprites\s_car</sprite>
     <sprite>sprites\s_light</sprite>
     <sprite>sprites\s_btn_cars</sprite>
+    <sprite>sprites\sprite4</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\background0</background>
   </backgrounds>
   <paths name="paths">
     <path>paths\left_up</path>
-    <path>paths\down_right</path>
+    <path>paths\right_down</path>
   </paths>
   <scripts name="scripts">
     <script>scripts\sprite_region.gml</script>
@@ -24,8 +25,10 @@
   </scripts>
   <objects name="objects">
     <object>objects\o_draw</object>
-    <object>objects\o_car</object>
-    <object>objects\o_car_test2</object>
+    <object>objects\object9</object>
+    <object>objects\o_car_left_up</object>
+    <object>objects\o_car_right_down</object>
+    <object>objects\object8</object>
     <object>objects\o_road_parent</object>
     <object>objects\o_road_4</object>
     <object>objects\o_road_3</object>

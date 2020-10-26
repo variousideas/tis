@@ -52,7 +52,7 @@
   </views>
   <instances>
     <instance objName="o_draw_solo" x="0" y="0" name="inst_F960DC5F" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
-    <instance objName="o_car_test2" x="224" y="160" name="inst_34B11AE1" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
+    <instance objName="o_car_left_up" x="32" y="256" name="inst_F88F1131" locked="0" code="" scaleX="1" scaleY="1" colour="4294967295" rotation="0"/>
   </instances>
   <tiles/>
   <PhysicsWorld>0</PhysicsWorld>

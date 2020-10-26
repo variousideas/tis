@@ -1,0 +1,13 @@
+[ 각 상황에서 차의 출발 위치 ]
+
+down to left
+> 188,height
+
+right to down
+> width, 188
+
+up to right
+> 162,0
+
+left to up
+> 0,162
