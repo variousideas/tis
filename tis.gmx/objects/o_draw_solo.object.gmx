@@ -139,6 +139,19 @@ else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
 draw_sprite(s_btn_cars,1,room_width*2/5,room_height-64);
 draw_sprite(s_btn_cars,2,room_width*3/5,room_height-64);
 draw_sprite(s_btn_cars,3,room_width*4/5,room_height-64);
+
+/*
+왼쪽: 94,200
+위쪽: 149,94
+오른쪽: 255,149
+아래쪽: 200,255
+*/
+
+draw_sprite_ext(s_light,0,94,200,1,1,0,c_white,0.7);
+draw_sprite_ext(s_light,1,149,94,1,1,270,c_white,0.7);
+draw_sprite_ext(s_light,2,255,149,1,1,180,c_white,0.7);
+draw_sprite_ext(s_light,3,200,255,1,1,90,c_white,0.7);
+
 </string>
           </argument>
         </arguments>
