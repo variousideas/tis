@@ -38,6 +38,8 @@ arr = test();
 //show_message(arr[0,1]);
 
 alarm[0] = 90;
+
+instance_create(room_width / 2, room_height / 2, o_car_witch);
 </string>
           </argument>
         </arguments>
@@ -111,7 +113,7 @@ ini_close();
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>room_goto_next();
+            <string>//room_goto_next();
 </string>
           </argument>
         </arguments>
@@ -143,9 +145,21 @@ left to up
 */
 
 if sprite_region(s_btn_cars,room_width/5,room_height-64) {
-    with (instance_create(188,road_width,o_car_universial)) {
+    with (instance_create(350,138,o_car_right)) {
+        angle_plus = 180;
+        path_start(p_right_right,1,0,0);
+    }
+    with (instance_create(138,0,o_car_right)) {
+        angle_plus = 270;
+        path_start(p_right_top,1,0,0);
+    }
+    with (instance_create(0,350-138,o_car_right)) {
+        angle_plus = 0;
+        path_start(p_right_left,1,0,0);
+    }
+    with (instance_create(350-138,350,o_car_right)) {
         angle_plus = 90;
-        path_start(down_left,1,0,0);
+        path_start(p_right_down,1,0,0);
     }
 }
 else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
@@ -153,14 +167,10 @@ else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
         angle_plus = 180;
         path_start(right_down,1,0,0);
     }
-}
-else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
     with (instance_create(162,0,o_car_universial)) {
         angle_plus = -90;
         path_start(up_right,1,0,0);
     }
-}
-else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
     with (instance_create(0,188,o_car_universial)) {
         angle_plus = 0;
         path_start(left_up,1,0,0);

@@ -25,8 +25,9 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>x = 189
-y = 189
+            <string>pos = 0;
+is_collipse = 0;
+//angle_plus = 0
 </string>
           </argument>
         </arguments>
@@ -49,21 +50,25 @@ y = 189
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if keyboard_check(vk_left)
-    x -= 1;
-if keyboard_check(vk_right)
-    x += 1;
-if keyboard_check(vk_up)
-    y -= 1;
-if keyboard_check(vk_down)
-    y += 1;
+            <string>if is_collipse == 0
+    path_speed = 1;
 
+if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
+    pos = 5/2*(path_position - 0.3);
+}
+if (path_position &gt; 0.7)
+    pos = 1;
+
+// 유일하게 다른 점
+image_angle = -90 * pos + angle_plus;
+
+is_collipse = 0;
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="5">
+    <event eventtype="4" ename="o_car_universial">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -80,7 +85,8 @@ if keyboard_check(vk_down)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>image_angle += 90;
+            <string>path_speed = 0;
+is_collipse = 1;
 </string>
           </argument>
         </arguments>
@@ -103,7 +109,8 @@ if keyboard_check(vk_down)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>show_message(x);
+            <string>//instance_destroy();
+show_message(x);
 show_message(y);
 </string>
           </argument>

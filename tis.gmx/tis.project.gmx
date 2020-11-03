@@ -22,6 +22,11 @@
     <path>paths\right_down</path>
     <path>paths\up_right</path>
     <path>paths\left_up</path>
+    <path>paths\p_right_right</path>
+    <path>paths\p_right_top</path>
+    <path>paths\p_right_left</path>
+    <path>paths\p_right_down</path>
+    <path>paths\path5</path>
   </paths>
   <scripts name="scripts">
     <script>scripts\sprite_region.gml</script>
@@ -30,6 +35,8 @@
   <objects name="objects">
     <object>objects\o_draw</object>
     <object>objects\o_car_universial</object>
+    <object>objects\o_car_right</object>
+    <object>objects\o_car_witch</object>
     <object>objects\o_road_parent</object>
     <object>objects\o_road_4</object>
     <object>objects\o_road_3</object>
@@ -39,6 +46,7 @@
   <rooms name="rooms">
     <room>rooms\room1</room>
     <room>rooms\room0</room>
+    <room>rooms\room2</room>
   </rooms>
   <help>
     <rtf>help.rtf</rtf>
