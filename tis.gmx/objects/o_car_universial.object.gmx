@@ -27,7 +27,8 @@
             <kind>1</kind>
             <string>pos = 0;
 is_collipse = 0;
-//angle_plus = 0
+
+step_one = 0;
 </string>
           </argument>
         </arguments>
@@ -50,8 +51,13 @@ is_collipse = 0;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if is_collipse == 0
-    path_speed = 1;
+            <string>if step_one == 0 {
+    step_one = 1;
+    event_user(0);
+}
+
+//if is_collipse == 0
+//    path_speed = 1;
 
 if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
     pos = 5/2*(path_position - 0.3);
@@ -59,8 +65,12 @@ if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
 if (path_position &gt; 0.7)
     pos = 1;
 
-image_angle = 90 * pos + angle_plus;
-
+if state_will == 0 {
+    image_angle = 90 * pos + angle_plus;
+}
+else if state_will == 2 {
+    image_angle = -90 * pos + angle_plus;
+}
 is_collipse = 0;
 </string>
           </argument>
@@ -109,6 +119,98 @@ is_collipse = 1;
           <argument>
             <kind>1</kind>
             <string>instance_destroy();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="10">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>/*
+state_where: 초기 상태 및 앞으로 누적될 상태 (처음엔 with로 받음)
+    0(왼쪽)  1(아래)  2(오른쪽)  3(위쪽)
+
+state_will: 좌회전, 직진, 우회전 예정 등에 대한 정보
+    0(좌회전)  1(직진)  2(우회전)
+    
+state_path: 예정 path (아래 switch문에서 결정됨)
+*/
+
+switch (state_where) {
+case 0:
+    angle_plus = 0;
+    if (state_will == 0)
+        state_path = p_left_left;
+    else if (state_will == 2)
+        state_path = p_right_left;
+    break;
+case 1:
+    angle_plus = 90;
+    if (state_will == 0)
+        state_path = p_left_down;
+    else if (state_will == 2)
+        state_path = p_right_down;
+    break;
+case 2:
+    angle_plus = 180;
+    if (state_will == 0)
+        state_path = p_left_right;
+    else if (state_will == 2)
+        state_path = p_right_right;
+    break;
+case 3:
+    angle_plus = 270;
+    if (state_will == 0)
+        state_path = p_left_up;
+    else if (state_will == 2)
+        state_path = p_right_up;
+    break;
+default: //assert
+    show_message("ERR: o_car_universial: create: 1");
+}
+
+if (state_will == 0 || state_will == 2) {
+    path_start(state_path, 1, 0, 0);
+    //path_speed = 10;
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="7" enumb="8">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>speed = 1;
 </string>
           </argument>
         </arguments>
