@@ -100,11 +100,12 @@ if (y &lt; 360)
 view_xview[0] += ((x-640)-view_xview[0]) / 12 + choose(view_shake,-view_shake);
 view_yview[0] += ((y-360)-view_yview[0]) / 12 + choose(view_shake,-view_shake);
 
-if (view_shake&gt;1)  {view_shake -= view_shake/6;}
-else    {view_shake = 0;}
-
+// View - 확대축소, shake
 view_wview[0] += (1280 * view_zoom - view_wview[0]) / 6;
 view_hview[0] = 0.5625 * view_wview[0];
+
+if (view_shake&gt;1)  {view_shake -= view_shake/6;}
+else    {view_shake = 0;}
 </string>
           </argument>
         </arguments>
