@@ -65,12 +65,16 @@ if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
 if (path_position &gt; 0.7)
     pos = 1;
 
+image_angle = direction;
+/* 효율화 이전
 if state_will == 0 {
     image_angle = 90 * pos + angle_plus;
 }
 else if state_will == 2 {
     image_angle = -90 * pos + angle_plus;
 }
+*/
+
 is_collipse = 0;
 </string>
           </argument>
