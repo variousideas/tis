@@ -32,6 +32,7 @@ step_one = 0; // 최초 1회 실행. (event_user_0 참고)
     할당받는 변수
     state_where: 어디서 시작했는지(누적) ( 0:왼쪽  1:아래  2:오른쪽  3:위쪽 )
     state_will: 어디로 갈 것인지 
+    car_num : g_car_num에 기반하여 할당받음
 */
 
 // 일반 변수
@@ -58,12 +59,77 @@ want_spd = 1;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>if step_one == 0 {
+            <string>// 최초 1회
+if step_one == 0 {
     step_one = 1;
     event_user(0);
 }
 
 image_angle = direction;
+
+// 가속
+if (path_speed &lt; want_spd) {
+    path_speed += 0.2;
+}
+else {
+    path_speed = want_spd;
+}
+
+// 충돌방지
+for (i = -1; i &lt; 2; i += 1) {
+    other_id = place_meeting(x+lengthdir_x(4,direction + i*40),y+lengthdir_y(4,direction + i*40),o_car_parents);
+    if (other_id) {
+        /*
+        other_direction = other_id.direction;
+        
+        // 방향 최적화
+        while (other_direction &gt;= 360) {
+            other_direction -= 360;
+        }
+        while (direction &gt;= 360) {
+            direction -= 360;
+        }
+        
+        // 4거리에서 작동하지 않는 문제 있어서 임시 배제(상대편 각도가 잘못 나오는 등)
+        delta = abs(other_direction - direction);
+        if (delta &lt;= 100) {
+            path_speed = 0; // 급정거 이므로 수정 필요 (want_spd를 낮추는 등)
+        }
+        */
+        
+        image_blend = c_blue;
+        
+        // 에러 해결 후 지울 예정 (반대편 차선에 문제가 없다면 계속 이용할 수 있음.
+        if (other_id.car_num &gt; car_num) {
+            path_speed = 0;
+            image_blend = c_red;
+        }
+        break;
+    }
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="5">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>show_message(direction);
 </string>
           </argument>
         </arguments>
@@ -153,7 +219,7 @@ default: //assert
 }
 
 if (state_will == 0 || state_will == 2) {
-    path_start(state_path, 1, 0, 0);
+    path_start(state_path, 0, 0, 0);
     //path_speed = 10;
 }
 </string>
