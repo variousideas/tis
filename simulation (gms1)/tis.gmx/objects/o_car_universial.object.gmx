@@ -5,7 +5,7 @@
   <visible>-1</visible>
   <depth>0</depth>
   <persistent>0</persistent>
-  <parentName>&lt;undefined&gt;</parentName>
+  <parentName>o_car_parents</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
     <event eventtype="0" enumb="0">
@@ -25,10 +25,17 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>pos = 0;
-is_collipse = 0;
+            <string>// 특수한 변수
+step_one = 0; // 최초 1회 실행. (event_user_0 참고)
 
-step_one = 0;
+/*
+    할당받는 변수
+    state_where: 어디서 시작했는지(누적) ( 0:왼쪽  1:아래  2:오른쪽  3:위쪽 )
+    state_will: 어디로 갈 것인지 
+*/
+
+// 일반 변수
+want_spd = 1;
 </string>
           </argument>
         </arguments>
@@ -56,77 +63,7 @@ step_one = 0;
     event_user(0);
 }
 
-//if is_collipse == 0
-//    path_speed = 1;
-
-if ((path_position &gt;= 0.3) &amp;&amp; (path_position &lt;= 0.7)) {
-    pos = 5/2*(path_position - 0.3);
-}
-if (path_position &gt; 0.7)
-    pos = 1;
-
 image_angle = direction;
-/* 효율화 이전
-if state_will == 0 {
-    image_angle = 90 * pos + angle_plus;
-}
-else if state_will == 2 {
-    image_angle = -90 * pos + angle_plus;
-}
-*/
-
-is_collipse = 0;
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="4" ename="o_road_parent">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>/*
-if (path_position &gt;= 0.22) {
-    path_speed = 0;
-}
-*/
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
-    <event eventtype="4" ename="o_car_universial">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>path_speed = 0;
-is_collipse = 1;
 </string>
           </argument>
         </arguments>
@@ -174,7 +111,7 @@ is_collipse = 1;
             <kind>1</kind>
             <string>/*
 state_where: 초기 상태 및 앞으로 누적될 상태 (처음엔 with로 받음)
-    0(왼쪽)  1(아래)  2(오른쪽)  3(위쪽)
+    
 
 state_will: 좌회전, 직진, 우회전 예정 등에 대한 정보
     0(좌회전)  1(직진)  2(우회전)
@@ -241,7 +178,7 @@ if (state_will == 0 || state_will == 2) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>speed = 1;
+            <string>speed = want_spd;
 </string>
           </argument>
         </arguments>

@@ -34,6 +34,7 @@
   </scripts>
   <objects name="objects">
     <object>objects\o_draw</object>
+    <object>objects\o_car_parents</object>
     <object>objects\o_car_universial</object>
     <object>objects\o_car_witch</object>
     <object>objects\o_road_parent</object>
