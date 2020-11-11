@@ -32,7 +32,6 @@ step_one = 0; // 최초 1회 실행. (event_user_0 참고)
     할당받는 변수
     state_where: 어디서 시작했는지(누적) ( 0:왼쪽  1:아래  2:오른쪽  3:위쪽 )
     state_will: 어디로 갈 것인지 
-    car_num : g_car_num에 기반하여 할당받음
 */
 
 // 일반 변수
@@ -75,36 +74,22 @@ else {
     path_speed = want_spd;
 }
 
-// 충돌방지
-for (i = -1; i &lt; 2; i += 1) {
-    other_id = place_meeting(x+lengthdir_x(4,direction + i*40),y+lengthdir_y(4,direction + i*40),o_car_parents);
-    if (other_id) {
-        /*
-        other_direction = other_id.direction;
-        
-        // 방향 최적화
-        while (other_direction &gt;= 360) {
-            other_direction -= 360;
-        }
-        while (direction &gt;= 360) {
-            direction -= 360;
-        }
-        
-        // 4거리에서 작동하지 않는 문제 있어서 임시 배제(상대편 각도가 잘못 나오는 등)
-        delta = abs(other_direction - direction);
-        if (delta &lt;= 100) {
-            path_speed = 0; // 급정거 이므로 수정 필요 (want_spd를 낮추는 등)
-        }
-        */
-        
-        image_blend = c_blue;
-        
-        // 에러 해결 후 지울 예정 (반대편 차선에 문제가 없다면 계속 이용할 수 있음.
-        if (other_id.car_num &gt; car_num) {
-            path_speed = 0;
-        }
-        break;
-    }
+// 방향 최적화
+while (direction &gt;= 360) {
+    direction -= 360;
+}
+
+// 충돌방지 - 각도로 한 번 방지
+other_id = instance_place(x+lengthdir_x(4,direction),y+lengthdir_y(4,direction),o_car_parents);
+if (other_id != -4) {
+    delta = abs(other_id.direction - direction);
+    if (delta &lt;= 95)
+        path_speed = 0;
+}
+
+// 겹침 방지 - 시뮬레이션의 가정 상 이런 일은 없지만, 테스트를 위함
+if (instance_place(x,y,o_car_parents) != -4) {
+    path_speed = 0;
 }
 </string>
           </argument>

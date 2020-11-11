@@ -30,7 +30,6 @@
   </paths>
   <scripts name="scripts">
     <script>scripts\sprite_region.gml</script>
-    <script>scripts\test.gml</script>
   </scripts>
   <objects name="objects">
     <object>objects\o_draw</object>
