@@ -102,7 +102,6 @@ for (i = -1; i &lt; 2; i += 1) {
         // 에러 해결 후 지울 예정 (반대편 차선에 문제가 없다면 계속 이용할 수 있음.
         if (other_id.car_num &gt; car_num) {
             path_speed = 0;
-            image_blend = c_red;
         }
         break;
     }
