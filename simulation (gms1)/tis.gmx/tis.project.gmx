@@ -26,7 +26,10 @@
     <path>paths\p_right_up</path>
     <path>paths\p_right_left</path>
     <path>paths\p_right_down</path>
-    <path>paths\p_straight</path>
+    <path>paths\p_st_left</path>
+    <path>paths\p_st_down</path>
+    <path>paths\p_st_right</path>
+    <path>paths\p_st_up</path>
   </paths>
   <scripts name="scripts">
     <script>scripts\sprite_region.gml</script>

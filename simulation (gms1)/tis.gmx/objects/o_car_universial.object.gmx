@@ -94,12 +94,14 @@ if (other_id != -4) {
     // 우회전은 신호무시
     if (state_will == 0) { // 좌회전
         if (other_id.light_mode[state_where] != 2)
-            path_speed = 0;
+            if (path_position &gt;= 0.22 &amp;&amp; path_position &lt;= 0.23) // 진행 중에 멈추지 않음
+                path_speed = 0;
     }
-    if (state_will == 1) {
+    if (state_will == 1) { // 직진
         if (other_id.light_mode[state_where] &lt;= 1)
-            path_speed = 0;
-    }    
+            if (path_position &gt;= 0.22 &amp;&amp; path_position &lt;= 0.23) // 진행 중에 멈추지 않음
+                path_speed = 0;
+    }
 }
 </string>
           </argument>
