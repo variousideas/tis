@@ -64,6 +64,7 @@ if step_one == 0 {
     event_user(0);
 }
 
+// 방향
 image_angle = direction;
 
 // 가속
@@ -87,9 +88,18 @@ if (other_id != -4) {
         path_speed = 0;
 }
 
-// 겹침 방지 - 시뮬레이션의 가정 상 이런 일은 없지만, 테스트를 위함
-if (instance_place(x,y,o_car_parents) != -4) {
-    path_speed = 0;
+// 신호탐지
+other_id = instance_position(x,y,o_road_parent);
+if (other_id != -4) {
+    // 우회전은 신호무시
+    if (state_will == 0) { // 좌회전
+        if (other_id.light_mode[state_where] != 2)
+            path_speed = 0;
+    }
+    if (state_will == 1) {
+        if (other_id.light_mode[state_where] &lt;= 1)
+            path_speed = 0;
+    }    
 }
 </string>
           </argument>
