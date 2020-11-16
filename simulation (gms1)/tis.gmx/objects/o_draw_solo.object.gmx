@@ -101,6 +101,7 @@ up to right
 left to up
 */
 
+// 좌회전
 if sprite_region(s_btn_cars,room_width/5,room_height-64) {
     with (instance_create(0,line_y[2],o_car_universial)) {
         state_where = 0;
@@ -123,6 +124,7 @@ if sprite_region(s_btn_cars,room_width/5,room_height-64) {
         init_spd = 1;
     }
 }
+// 우회전
 else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
     with (instance_create(0,line_y[3],o_car_universial)) {
         state_where = 0;
@@ -142,6 +144,29 @@ else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
     with (instance_create(line_x[0],0,o_car_universial)) {
         state_where = 3;
         state_will = 2;
+        init_spd = 1;
+    }
+}
+// 직진
+else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
+    with (instance_create(0,line_y[3],o_car_universial)) {
+        state_where = 0;
+        state_will = 1;
+        init_spd = 1;
+    }
+    with (instance_create(line_x[3],road_width,o_car_universial)) {
+        state_where = 1;
+        state_will = 1;
+        init_spd = 1;
+    }
+    with (instance_create(road_width,line_y[0],o_car_universial)) {
+        state_where = 2;
+        state_will = 1;
+        init_spd = 1;
+    }
+    with (instance_create(line_x[0],0,o_car_universial)) {
+        state_where = 3;
+        state_will = 1;
         init_spd = 1;
     }
 }
