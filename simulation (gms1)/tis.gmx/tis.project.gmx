@@ -13,6 +13,7 @@
     <sprite>sprites\s_light</sprite>
     <sprite>sprites\s_btn_cars</sprite>
     <sprite>sprites\sprite4</sprite>
+    <sprite>sprites\sprite5</sprite>
   </sprites>
   <backgrounds name="background">
     <background>background\background0</background>
@@ -44,6 +45,7 @@
     <object>objects\o_road_3</object>
     <object>objects\o_road_0</object>
     <object>objects\o_draw_solo</object>
+    <object>objects\o_traffic_light</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room1</room>
