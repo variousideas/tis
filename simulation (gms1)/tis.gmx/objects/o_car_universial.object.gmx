@@ -285,7 +285,7 @@ if (state_will == 0 || state_will == 2) {
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>speed = want_spd;
+            <string>direction = round(direction)
 </string>
           </argument>
         </arguments>
