@@ -26,6 +26,8 @@
           <argument>
             <kind>1</kind>
             <string>// 전역변수 대체
+car_id = 0;
+step = 0;
 
 // 하드코딩 방지
 road_width = sprite_get_width(s_road);
@@ -43,6 +45,8 @@ line_y[3] = road_width - 138;
 
 // 사거리
 instance_create(0,0,o_road_4); //왼쪽 1차선에
+
+ini_open("test.ini");
 </string>
           </argument>
         </arguments>
@@ -65,11 +69,17 @@ instance_create(0,0,o_road_4); //왼쪽 1차선에
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*
-ini_open("test.ini");
-ini_write_real("sec1", "key1", 2019);
-ini_write_string("sec2", "key2", "얏호");
-ini_close();
+            <string>var __tmp = string(step);
+with (o_car_universial) {
+    ini_write_string(__tmp, string(car_id), string(round(x)) + "," + string(round(y)));
+}
+step += 1;
+
+/*
+
+with(object1)
+{__variable+=variable;}
+show_debug_message(__variable);
 */
 </string>
           </argument>
@@ -107,22 +117,30 @@ if sprite_region(s_btn_cars,room_width/5,room_height-64) {
         state_where = 0;
         state_will = 0;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[2],road_width,o_car_universial)) {
         state_where = 1;
         state_will = 0;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(road_width,line_y[1],o_car_universial)) {
         state_where = 2;
         state_will = 0;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[1],0,o_car_universial)) {
         state_where = 3;
         state_will = 0;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
 }
 // 우회전
 else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
@@ -130,22 +148,30 @@ else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
         state_where = 0;
         state_will = 2;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[3],road_width,o_car_universial)) {
         state_where = 1;
         state_will = 2;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(road_width,line_y[0],o_car_universial)) {
         state_where = 2;
         state_will = 2;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[0],0,o_car_universial)) {
         state_where = 3;
         state_will = 2;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
 }
 // 직진
 else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
@@ -153,46 +179,65 @@ else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
         state_where = 0;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[2],road_width,o_car_universial)) {
         state_where = 1;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(road_width,line_y[1],o_car_universial)) {
         state_where = 2;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[1],0,o_car_universial)) {
         state_where = 3;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
-    
+    car_id += 1;
     with (instance_create(0,line_y[3],o_car_universial)) {
         state_where = 0;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[3],road_width,o_car_universial)) {
         state_where = 1;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(road_width,line_y[0],o_car_universial)) {
         state_where = 2;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
     with (instance_create(line_x[0],0,o_car_universial)) {
         state_where = 3;
         state_will = 1;
         init_spd = 1;
+        car_id = o_draw_solo.car_id;
     }
+    car_id += 1;
 }
 else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
     room_goto_next();
+}
+else if sprite_region(s_btn_cars,room_width-150,room_height-150) {
+    ini_close();
+    game_end();
 }
 </string>
           </argument>
@@ -220,6 +265,10 @@ else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
 draw_sprite(s_btn_cars,1,room_width*2/5,room_height-64);
 draw_sprite(s_btn_cars,2,room_width*3/5,room_height-64);
 draw_sprite(s_btn_cars,3,room_width*4/5,room_height-64);
+draw_sprite(s_btn_cars,4,room_width-150,room_height-150);
+
+draw_set_color(c_red);
+draw_text(room_width / 2,room_height / 2, step);
 </string>
           </argument>
         </arguments>
