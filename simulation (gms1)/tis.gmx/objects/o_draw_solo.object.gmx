@@ -46,6 +46,10 @@ line_y[3] = road_width - 138;
 // 사거리
 instance_create(0,0,o_road_4); //왼쪽 1차선에
 
+// 기록
+if file_exists("test.ini")
+    file_delete("test.ini");
+    
 ini_open("test.ini");
 </string>
           </argument>
@@ -76,7 +80,6 @@ with (o_car_universial) {
 step += 1;
 
 /*
-
 with(object1)
 {__variable+=variable;}
 show_debug_message(__variable);
