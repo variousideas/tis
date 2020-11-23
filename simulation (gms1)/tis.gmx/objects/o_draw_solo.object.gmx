@@ -106,15 +106,7 @@ show_debug_message(__variable);
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>/*
-place meeting?
-down to left
-right to down
-up to right
-left to up
-*/
-
-// 좌회전
+            <string>// 좌회전
 if sprite_region(s_btn_cars,room_width/5,room_height-64) {
     with (instance_create(0,line_y[2],o_car_universial)) {
         state_where = 0;
@@ -205,6 +197,7 @@ else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
         init_spd = 1;
         car_id = o_draw_solo.car_id;
     }
+    
     car_id += 1;
     with (instance_create(0,line_y[3],o_car_universial)) {
         state_where = 1;
@@ -236,7 +229,7 @@ else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
     car_id += 1;
 }
 else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
-    room_goto_next();
+    room_goto_previous();
 }
 else if sprite_region(s_btn_cars,room_width-150,room_height-150) {
     ini_close();

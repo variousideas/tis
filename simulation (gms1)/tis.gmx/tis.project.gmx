@@ -51,6 +51,7 @@
     <object>objects\o_traffic_light</object>
     <object>objects\o_draw</object>
     <object>objects\o_tool_traffic</object>
+    <object>objects\o_setter</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\room1</room>

@@ -29,6 +29,11 @@
 car_id = 0;
 step = 0;
 
+// 입력받음
+road_xmax = 5;
+road_ymax = 4;
+car_max = 40;
+
 // 하드코딩 방지
 road_width = sprite_get_width(s_road);
 car_width = sprite_get_width(s_car);
@@ -45,6 +50,8 @@ line_y[3] = road_width - 138;
 
 monitor_width = 1280;
 monitor_height = 720;
+
+
 
 // 사거리
 //instance_create(0,0,o_road_4); //왼쪽 1차선에
@@ -231,6 +238,33 @@ with (o_car_universial) {
     ini_write_string(__tmp, string(car_id), string(round(x)) + "," + string(round(y)));
 }
 step += 1;
+
+if (instance_number(o_car_universial) &lt; car_max) {
+    event_user(0);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="6" enumb="54">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>event_user(0);
 </string>
           </argument>
         </arguments>
@@ -253,26 +287,56 @@ step += 1;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>// 왼쪽에서 (좌회전, 우회전, 직진)
-list[0] = line_y[2]; list_will[0] = 0;
-list[1] = line_y[3]; list_will[1] = 2;
-list[2] = line_y[2]; list_will[2] = 1;
-list[3] = line_y[3]; list_will[3] = 1;
-    
-var __car_id = car_id;
+            <string>list_will[0] = 0;
+list_will[1] = 2;
+list_will[2] = 1;
+list_will[3] = 1;
 
-//i = irandom_range(0,3);
-i = 1;
-var __will = list_will[i];
-if (!position_meeting(0,list[i],o_car_universial)) {
-    with (instance_create(0,list[i] + road_width,o_car_universial)) {
-        state_where = 0; state_will = __will;
-        init_spd = random_range(1,3);
-        car_id = __car_id;
+//lbrt = 2; // 어디서 생성할 것인가: 0(좌), 1(하), 2(우), 3(위)
+i = irandom(3); // 어느 방향으로 갈 것인가: 0(좌) 1(우) 2(직1) 3(직2)
+
+for (lbrt = 0; lbrt &lt; 4; lbrt += 1) {        
+    switch (lbrt) {
+    case 0: // 왼쪽에서 (좌, 우, 직, 직2)
+        xx = 0;
+        list[0] = line_y[2]; list[2] = list[0];
+        list[1] = line_y[3]; list[3] = list[1];
+        xx = 0;
+        yy = list[i] + road_width * irandom(road_ymax-1);
+        where = 0;
+        break;
+    case 1: // 아래쪽에서 - special
+        list[0] = line_x[2]; list[2] = list[0];
+        list[1] = line_x[3]; list[3] = list[1];
+        xx = list[i] + road_width * irandom(road_xmax-1);
+        yy = road_width * road_ymax;
+        where = 2;
+        break;
+    case 2: // 오른쪽에서 - special
+        list[0] = line_y[1]; list[2] = list[0];
+        list[1] = line_y[0]; list[3] = list[1];
+        xx = road_width * road_xmax;
+        yy = list[i] + road_width * irandom(road_ymax-1);
+        where = 4;
+        break;
+    case 3: // 위쪽에서
+        list[0] = line_x[1]; list[2] = list[0];
+        list[1] = line_x[0]; list[3] = list[1];
+        xx = list[i] + road_width * irandom(road_xmax-1);
+        yy = 0;
+        where = 6;
     }
-}
-else {
-    show_message("Pass");
+    if (!position_meeting(xx, yy, o_car_universial)) {
+        obj = instance_create(xx,yy,o_car_universial);
+        if (i == 0 || i == 2)
+            obj.state_where = where;
+        else
+            obj.state_where = where + 1;
+        obj.state_will = list_will[i];
+        obj.init_spd = random_range(1,3);
+        obj.car_id = car_id;
+        car_id += 1;
+    }
 }
 </string>
           </argument>
@@ -297,6 +361,8 @@ else {
           <argument>
             <kind>1</kind>
             <string>// 스텝 표시
+
+draw_set_alpha(0.6);
 draw_set_colour(c_dkgray);
 draw_rectangle(monitor_width-200,0,monitor_width,300,0);
 draw_set_color(c_white);
@@ -308,6 +374,33 @@ draw_set_colour(c_aqua);
 if (mouse_region(monitor_width-200,100,monitor_width,200))
     draw_set_color(c_black);
 draw_text(1280 - 100, 150, "ini save &amp; exit");
+
+
+draw_text(1280 - 100, 200, instance_number(o_car_universial));
+draw_set_alpha(1);
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="116">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>room_restart();
 </string>
           </argument>
         </arguments>
