@@ -226,8 +226,10 @@ else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
           <argument>
             <kind>1</kind>
             <string>var __tmp = string(step);
-with (o_car_universial) {
-    ini_write_string(__tmp, string(car_id), string(round(x)) + "," + string(round(y)));
+if (step % 30 == 0) {
+    with (o_car_universial) {
+        ini_write_string(__tmp, string(car_id), string(round(x)) + "," + string(round(y)));
+    }
 }
 step += 1;
 
@@ -258,6 +260,7 @@ if (instance_number(o_car_universial) &lt; car_max) {
             <kind>1</kind>
             <string>if mouse_region(view_xview[0]+20, view_yview[0]+115, view_xview[0]+155, view_yview[0]+142) {
     ini_close();
+    show_message("저장되었습니다!");
     game_end();
 }
 </string>
