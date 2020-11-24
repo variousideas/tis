@@ -29,11 +29,34 @@
 view_shake = 0;
 view_zoom = 1;
 
-// 세팅: 도로 크기
-road_xmax = 5;
-road_ymax = 4;
+// 도로 크기는 사용자에게 받아옴
+//road_xmax = 5;
+//road_ymax = 4;
 
-// 세팅: 도로 종류 (전부 사거리)
+alarm[0] = 1;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>// 세팅: 도로 종류 (전부 사거리)
 for (j = 0; j &lt; road_ymax; j += 1) {
     for (i = 0; i &lt; road_xmax; i += 1) {
         road_arr[i,j] = 4;

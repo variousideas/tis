@@ -30,9 +30,8 @@ car_id = 0;
 step = 0;
 
 // 입력받음
-road_xmax = 5;
-road_ymax = 4;
-car_max = 40;
+//road_xmax = 5;
+//road_ymax = 4;
 
 // 하드코딩 방지
 road_width = sprite_get_width(s_road);
@@ -51,18 +50,11 @@ line_y[3] = road_width - 138;
 monitor_width = 1280;
 monitor_height = 720;
 
-
-
-// 사거리
-//instance_create(0,0,o_road_4); //왼쪽 1차선에
-
 // 기록
 if file_exists("test.ini")
     file_delete("test.ini");
     
 ini_open("test.ini");
-
-event_user(0);
 </string>
           </argument>
         </arguments>
@@ -247,29 +239,6 @@ if (instance_number(o_car_universial) &lt; car_max) {
         </arguments>
       </action>
     </event>
-    <event eventtype="6" enumb="54">
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>event_user(0);
-</string>
-          </argument>
-        </arguments>
-      </action>
-    </event>
     <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
@@ -383,7 +352,7 @@ draw_set_alpha(1);
         </arguments>
       </action>
     </event>
-    <event eventtype="9" enumb="116">
+    <event eventtype="9" enumb="117">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -401,6 +370,29 @@ draw_set_alpha(1);
           <argument>
             <kind>1</kind>
             <string>room_restart();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="116">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>game_restart();
 </string>
           </argument>
         </arguments>

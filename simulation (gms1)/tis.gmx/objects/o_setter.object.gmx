@@ -4,7 +4,7 @@
   <solid>0</solid>
   <visible>-1</visible>
   <depth>0</depth>
-  <persistent>0</persistent>
+  <persistent>-1</persistent>
   <parentName>&lt;undefined&gt;</parentName>
   <maskName>&lt;undefined&gt;</maskName>
   <events>
@@ -25,8 +25,11 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>road_xmax = 5;
-road_ymax = 4;
+            <string>//road_xmax = 5;
+//road_ymax = 4;
+road_xmax = get_integer("가로 반복",5);
+road_ymax = get_integer("세로 반복",4);
+car_max = get_integer("최대차량(+3가능)", 20);
 
 road_width = sprite_get_width(s_road);
 
@@ -34,6 +37,41 @@ room_set_width(room0 ,road_width * road_xmax);
 room_set_height(room0 ,road_width * road_ymax);
 
 room_goto(room0);
+
+alarm[0] = 1;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="0">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>tmp = instance_create(0,0,o_draw_multi);
+tmp.road_xmax = road_xmax;
+tmp.road_ymax = road_ymax;
+
+tmp = instance_create(0,0,o_draw);
+tmp.road_xmax = road_xmax;
+tmp.road_ymax = road_ymax;
+tmp.car_max = car_max;
+
+
+instance_destroy();
 </string>
           </argument>
         </arguments>
