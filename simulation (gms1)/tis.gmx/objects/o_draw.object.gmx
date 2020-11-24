@@ -356,7 +356,7 @@ for (lbrt = 0; lbrt &lt; 4; lbrt += 1) {
           <argument>
             <kind>1</kind>
             <string>// 스텝 표시
-draw_sprite_ext(s_tool_system,0,0,0,1,1,0,c_white,0.6);
+draw_sprite_ext(s_tool_system,0,0,0,1,1,0,c_white,0.7);
 
 draw_set_alpha(1)
 draw_set_colour(c_dkgray);
