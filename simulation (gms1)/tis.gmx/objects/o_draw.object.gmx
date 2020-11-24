@@ -239,6 +239,32 @@ if (instance_number(o_car_universial) &lt; car_max) {
         </arguments>
       </action>
     </event>
+    <event eventtype="6" enumb="53">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if mouse_region(view_xview[0]+20, view_yview[0]+115, view_xview[0]+155, view_yview[0]+142) {
+    ini_close();
+    game_end();
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="7" enumb="10">
       <action>
         <libid>1</libid>
@@ -330,23 +356,15 @@ for (lbrt = 0; lbrt &lt; 4; lbrt += 1) {
           <argument>
             <kind>1</kind>
             <string>// 스텝 표시
+draw_sprite_ext(s_tool_system,0,0,0,1,1,0,c_white,0.6);
 
-draw_set_alpha(0.6);
+draw_set_alpha(1)
 draw_set_colour(c_dkgray);
-draw_rectangle(monitor_width-200,0,monitor_width,300,0);
-draw_set_color(c_white);
-draw_set_halign(fa_center);
+draw_set_halign(fa_left);
 draw_set_valign(fa_middle);
-draw_text(1280 - 100, 20, "step: " + string(step));
+draw_text(84,43,string(step));
+draw_text(117,78,string(instance_number(o_car_universial)));
 
-draw_set_colour(c_aqua);
-if (mouse_region(monitor_width-200,100,monitor_width,200))
-    draw_set_color(c_black);
-draw_text(1280 - 100, 150, "ini save &amp; exit");
-
-
-draw_text(1280 - 100, 200, instance_number(o_car_universial));
-draw_set_alpha(1);
 </string>
           </argument>
         </arguments>
