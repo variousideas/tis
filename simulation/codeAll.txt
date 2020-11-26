@@ -1,0 +1,1577 @@
+Information about object: o_draw_multi
+Sprite: 
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+road_width = sprite_get_width(s_road);
+
+
+// 도로 크기는 사용자에게 받아옴
+//road_xmax = 5;
+//road_ymax = 4;
+
+alarm[0] = 1;
+
+Alarm Event for alarm 0:
+
+execute code:
+
+// 세팅: 도로 종류 (전부 사거리)
+for (j = 0; j < road_ymax; j += 1) {
+    for (i = 0; i < road_xmax; i += 1) {
+        road_arr[i,j] = 4;
+    }
+}
+
+// 도로 깔기
+for (j = 0; j < road_ymax; j += 1) {
+    for (i = 0; i < road_xmax; i += 1) {
+        switch (road_arr[i,j]) {
+            case 4:
+                instance_create(road_width*i,road_width*j,o_road_4);
+                break
+            case 3:
+                instance_create(road_width*i,road_width*j,o_road_3);
+                break
+            case 0:
+                instance_create(road_width*i,road_width*j,o_road_0);
+                break
+        }
+    }
+}
+
+______________________________________________________
+
+Information about object: o_car_parents
+Sprite: s_car
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+
+Children
+o_car_universial
+o_car_user
+
+Mask: 
+
+No Physics Object
+______________________________________________________
+
+Information about object: o_car_universial
+Sprite: s_car
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: o_car_parents
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+// 특수한 변수
+step_one = 0; // 최초 1회 실행. (event_user_0 참고)
+
+/*
+    할당받는 변수
+    state_where: 어디서 시작했는지(누적) ( 0:왼쪽  1:아래  2:오른쪽  3:위쪽 )
+    state_will: 어디로 갈 것인지 
+    init_spd: 해당 차량의 최대속도
+*/
+
+// 일반 변수
+// want_spd: 1스텝 후 init_spd로 초기화됨
+resist = 0; // 도중에 신호가 바뀌더라도 유지.
+step_count = 0; // 유지 기간 설정을 위한 count.
+
+Step Event:
+
+execute code:
+
+// 최초 1회
+if step_one == 0 {
+    step_one = 1;
+    want_spd = init_spd; // 가속 등을 위함
+    event_user(0);
+}
+
+// 신호준수
+other_id = instance_place(x+lengthdir_x(init_spd,direction),y+lengthdir_y(init_spd,direction),o_traffic_light);
+want_spd = init_spd;
+if (other_id != -4) {
+    if (state_will != 2 && resist != 1) { // 우회전하고 진행 중은 무시
+        //진행 신호
+        if (other_id.image_index == 2) {
+            resist = 1;
+        }
+        // 빨 또는 노
+        else if (other_id.image_index == 0 || other_id.image_index == 1) {
+            want_spd = 0;
+        }
+    }
+}
+if (resist == 1) { // 진행 중에는 계속 진행, 충분히 진행 시 초기화
+    step_count += 1;
+    if (path_speed * step_count >= 20+15+10) {
+        resist = 0;
+        step_count = 0;
+    }
+}
+
+// 충돌방지 - 각도로 한 번 방지
+image_blend = c_white;
+// 원래 4
+other_id = instance_place(x+lengthdir_x(init_spd+3,direction),y+lengthdir_y(init_spd+3,direction),o_car_parents);
+if (other_id != -4) {
+    delta = abs(other_id.direction - direction);
+    if (delta > 180) {
+        delta = 360-delta;
+    }
+    if (delta <= 95) {
+        image_blend = c_gray;
+        want_spd = 0;
+    }
+}
+
+// 방향
+image_angle = direction;
+
+// 방향 최적화
+while (direction >= 360) {
+    direction -= 360;
+}
+
+// 가속
+if (path_speed < want_spd)
+    path_speed += 0.2;
+if (path_speed > want_spd)
+    path_speed = want_spd;
+
+/* 신호탐지 - 구버전 방식
+other_id = instance_position(x,y,o_road_parent);
+if (other_id != -4) {
+    // 우회전은 신호무시
+    if (state_will == 0) { // 좌회전
+        if (other_id.light_mode[state_where] != 2)
+            if (path_position >= 0.22 && path_position <= 0.23) // 진행 중에 멈추지 않음
+                path_speed = 0;
+    }
+    if (state_will == 1) { // 직진
+        if (other_id.light_mode[state_where] <= 1)
+            if (path_position >= 0.22 && path_position <= 0.23) // 진행 중에 멈추지 않음
+                path_speed = 0;
+    }
+}
+*/
+
+Mouse Event for Left Pressed:
+
+execute code:
+
+instance_destroy();
+
+Other Event: Outside Room:
+
+execute code:
+
+instance_destroy();
+
+Other Event: End Of Path:
+
+execute code:
+
+/*< 한 블록을 이동한 뒤 새로운 state_where이 정해지는 방법 >
+
+state_will이 0인 경우)
+state_where += 2
+(단, 6,7인 경우 0,1로 변경)
+
+state_will이 2인 경우)
+state_where -= 2
+(단, 0,1인 경우 6,7로 변경)
+
+state_will이 1인 경우)
+state_where = state_where
+
+*/
+
+// next state_where
+switch (state_will) {
+case 0:
+    state_where += 2;
+    if (state_where > 7)
+        state_where -= 8;
+    break;
+case 2:
+    state_where -= 2;
+    if (state_where < 0)
+        state_where += 8;
+    break;
+}
+// next state_will
+if (irandom(1) == 0) {
+    state_will = 1;
+}
+else {
+    if (state_will == 0) {state_will = 0;}
+    else if (state_will == 2) {state_will = 2;}
+    else if (state_where % 2 == 0) {state_will = 0;}
+    else if (state_where % 2 == 1) {state_will = 2;}
+    else {show_message("assert: end of path: state_will: " + string(state_will));}
+}
+
+event_user(0);
+path_speed = want_spd;
+
+Other Event: User Defined 0:
+
+execute code:
+
+/*
+state_where: 초기 상태 및 앞으로 누적될 상태 (처음엔 with로 받음)
+    
+
+state_will: 좌회전, 직진, 우회전 예정 등에 대한 정보
+    0(좌회전)  1(직진)  2(우회전)
+    
+state_path: 예정 path (아래 switch문에서 결정됨)
+*/
+
+// 움찔움찔 문제의 원인. 없어도 되는 코드.
+//direction = state_where / 2 * 90;
+
+// 추후 초기 좌표에 문제 생길 시 여기서 잡을 것.
+if (state_where <= 1) {
+    switch (state_will) {
+    case 0: state_path = p_left_left; break;
+    case 1: state_path = p_st_left; break;
+    case 2: state_path = p_right_left; break;
+    }
+}
+else if (state_where <= 3) {
+    switch (state_will) {
+    case 0: state_path = p_left_down; break;
+    case 1: state_path = p_st_down; break;
+    case 2: state_path = p_right_down; break;
+    }
+}
+else if (state_where <= 5) {
+    switch (state_will) {
+    case 0: state_path = p_left_right; break;
+    case 1: state_path = p_st_right; break;
+    case 2: state_path = p_right_right; break;
+    }
+}
+else if (state_where <= 7) {
+    switch (state_will) {
+    case 0: state_path = p_left_up; break;
+    case 1: state_path = p_st_up; break;
+    case 2: state_path = p_right_up; break;
+    }
+}
+else {
+    show_message("asser: car_universial: state_where이 정해지지 않음.");
+    game_end();
+}
+
+//if (state_will == 0 || state_will == 2) {
+path_start(state_path, 0, 0, 0);
+//path_speed = 10;
+
+______________________________________________________
+
+Information about object: o_car_user
+Sprite: s_emb
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: o_car_parents
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+// 특수한 변수
+step_one = 0; // 최초 1회 실행. (event_user_0 참고)
+
+/*
+    할당받는 변수
+    state_where: 어디서 시작했는지(누적) ( 0:왼쪽  1:아래  2:오른쪽  3:위쪽 )
+    state_will: 어디로 갈 것인지 
+    init_spd: 해당 차량의 최대속도
+    
+    얼마나 진행됐는지 = iter_now
+    목표 진행 카운트 전체 = iter_max
+*/
+
+// 일반 변수
+// want_spd: 1스텝 후 init_spd로 초기화됨
+resist = 0; // 도중에 신호가 바뀌더라도 유지.
+step_count = 0; // 유지 기간 설정을 위한 count.
+
+Step Event:
+
+execute code:
+
+// 최초 1회
+if step_one == 0 {
+    step_one = 1;
+    want_spd = init_spd; // 가속 등을 위함
+    event_user(0);
+}
+
+// 신호준수
+other_id = instance_place(x+lengthdir_x(init_spd,direction),y+lengthdir_y(init_spd,direction),o_traffic_light);
+want_spd = init_spd;
+if (other_id != -4) {
+    if (state_will != 2 && resist != 1) { // 우회전하고 진행 중은 무시
+        //진행 신호
+        if (other_id.image_index == 2) {
+            resist = 1;
+        }
+        // 빨 또는 노
+        else if (other_id.image_index == 0 || other_id.image_index == 1) {
+            want_spd = 0;
+        }
+    }
+}
+if (resist == 1) { // 진행 중에는 계속 진행, 충분히 진행 시 초기화
+    step_count += 1;
+    if (path_speed * step_count >= 20+15+10) {
+        resist = 0;
+        step_count = 0;
+    }
+}
+
+// 충돌방지 - 각도로 한 번 방지
+image_blend = c_white;
+// 원래 4
+other_id = instance_place(x+lengthdir_x(init_spd+3,direction),y+lengthdir_y(init_spd+3,direction),o_car_parents);
+if (other_id != -4) {
+    image_blend = c_blue;
+    delta = abs(other_id.direction - direction);
+    if (delta > 180) {
+        delta = 360-delta;
+    }
+    if (delta <= 95) {
+        image_blend = c_red;
+        want_spd = 0;
+    }
+}
+
+// 방향
+image_angle = direction;
+
+// 방향 최적화
+while (direction >= 360) {
+    direction -= 360;
+}
+
+// 차이점
+if (iter_now <= iter_max) {
+    // 가속
+    if (path_speed < want_spd)
+        path_speed += 0.2;
+    if (path_speed > want_spd)
+        path_speed = want_spd;
+    }
+else {
+    path_speed = 0;
+}
+
+/* 신호탐지 - 구버전 방식
+other_id = instance_position(x,y,o_road_parent);
+if (other_id != -4) {
+    // 우회전은 신호무시
+    if (state_will == 0) { // 좌회전
+        if (other_id.light_mode[state_where] != 2)
+            if (path_position >= 0.22 && path_position <= 0.23) // 진행 중에 멈추지 않음
+                path_speed = 0;
+    }
+    if (state_will == 1) { // 직진
+        if (other_id.light_mode[state_where] <= 1)
+            if (path_position >= 0.22 && path_position <= 0.23) // 진행 중에 멈추지 않음
+                path_speed = 0;
+    }
+}
+*/
+
+Mouse Event for Left Pressed:
+
+execute code:
+
+instance_destroy();
+
+Other Event: Outside Room:
+
+execute code:
+
+instance_destroy();
+
+Other Event: End Of Path:
+
+execute code:
+
+/*< 한 블록을 이동한 뒤 새로운 state_where이 정해지는 방법 >
+
+state_will이 0인 경우)
+state_where += 2
+(단, 6,7인 경우 0,1로 변경)
+
+state_will이 2인 경우)
+state_where -= 2
+(단, 0,1인 경우 6,7로 변경)
+
+state_will이 1인 경우)
+state_where = state_where
+
+*/
+
+iter_now += 1;
+
+// next state_where
+switch (state_will) {
+case 0:
+    state_where += 2;
+    if (state_where > 7)
+        state_where -= 8;
+    break;
+case 2:
+    state_where -= 2;
+    if (state_where < 0)
+        state_where += 8;
+    break;
+}
+// next state_will
+if (em_x > 0) {
+    em_x -= 1;
+    state_will = 1; // 직진
+}
+else if (em_x == 0) {
+    em_x = -1;
+    state_will = 2;
+}
+else if (em_y > 0) {
+    em_y -= 1;
+    state_will = 1; // 직진
+}
+
+
+
+event_user(0);
+path_speed = want_spd;
+
+Other Event: User Defined 0:
+
+execute code:
+
+/*
+state_where: 초기 상태 및 앞으로 누적될 상태 (처음엔 with로 받음)
+    
+
+state_will: 좌회전, 직진, 우회전 예정 등에 대한 정보
+    0(좌회전)  1(직진)  2(우회전)
+    
+state_path: 예정 path (아래 switch문에서 결정됨)
+*/
+
+// 움찔움찔 문제의 원인. 없어도 되는 코드.
+//direction = state_where / 2 * 90;
+
+// 추후 초기 좌표에 문제 생길 시 여기서 잡을 것.
+if (state_where <= 1) {
+    switch (state_will) {
+    case 0: state_path = p_left_left; break;
+    case 1: state_path = p_st_left; break;
+    case 2: state_path = p_right_left; break;
+    }
+}
+else if (state_where <= 3) {
+    switch (state_will) {
+    case 0: state_path = p_left_down; break;
+    case 1: state_path = p_st_down; break;
+    case 2: state_path = p_right_down; break;
+    }
+}
+else if (state_where <= 5) {
+    switch (state_will) {
+    case 0: state_path = p_left_right; break;
+    case 1: state_path = p_st_right; break;
+    case 2: state_path = p_right_right; break;
+    }
+}
+else if (state_where <= 7) {
+    switch (state_will) {
+    case 0: state_path = p_left_up; break;
+    case 1: state_path = p_st_up; break;
+    case 2: state_path = p_right_up; break;
+    }
+}
+else {
+    show_message("asser: car_universial: state_where이 정해지지 않음.");
+    game_end();
+}
+
+//if (state_will == 0 || state_will == 2) {
+path_start(state_path, 0, 0, 0);
+//path_speed = 10;
+
+______________________________________________________
+
+Information about object: o_car_witch
+Sprite: s_car
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Step Event:
+
+execute code:
+
+if (keyboard_check(vk_left))
+    x -= 1;
+if (keyboard_check(vk_right))
+    x += 1;
+if (keyboard_check(vk_up))
+    y -= 1;
+if (keyboard_check(vk_down))
+    y += 1;
+
+Mouse Event for Left Pressed:
+
+execute code:
+
+image_angle += 90;
+
+Mouse Event for Right Pressed:
+
+execute code:
+
+show_message(x);
+show_message(y);
+
+______________________________________________________
+
+Information about object: o_road_parent
+Sprite: 
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+
+Children
+o_road_4
+o_road_3
+o_road_0
+
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+image_speed = 0;
+
+______________________________________________________
+
+Information about object: o_road_4
+Sprite: s_road
+Solid: false
+Visible: true
+Depth: 10
+Persistent: false
+Parent: o_road_parent
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+image_speed = 0;
+image_index = 0;
+
+// 신호등 객체(4개)
+t1 = instance_create(x + 94,y + 200,o_traffic_light);
+t1.image_angle = 0;
+t1.image_index = 1;
+
+t2 = instance_create(x + 200,y + 255,o_traffic_light);
+t2.image_angle = 90;
+t2.image_index = 2;
+
+t3 = instance_create(x + 255,y + 149,o_traffic_light);
+t3.image_angle = 180;
+t3.image_index = 2;
+
+t4 = instance_create(x + 149,y + 94,o_traffic_light);
+t4.image_angle = 270;
+t4.image_index = 2;
+
+// 반영
+light_integration_mode = 0;
+event_user(0);
+
+delay = room_speed * 5;
+delay_yellow = room_speed * 3;
+alarm[1] = delay;
+
+Alarm Event for alarm 0:
+
+execute code:
+
+// 상태변경 + 반영
+switch (light_integration_mode) {
+case 0:
+    light_integration_mode = 1;
+    break;
+case 1:
+    light_integration_mode = 2;
+    break;
+case 2:
+    light_integration_mode = 3;
+    break;
+case 3:
+    light_integration_mode = 0;
+    break;
+}
+event_user(0);
+alarm[1] = delay;
+
+Alarm Event for alarm 1:
+
+execute code:
+
+// 노란불
+if (t1.image_index == 2)
+    t1.image_index = 1;
+else if (t2.image_index == 2)
+    t2.image_index = 1;
+else if (t3.image_index == 2)
+    t3.image_index = 1;
+else if (t4.image_index == 2)
+    t4.image_index = 1;
+
+alarm[0] = delay_yellow;
+
+Step Event:
+
+execute code:
+
+// light_mode: 배열(왼쪽, 아래, 오른쪽, 위쪽 순)
+// 0(빨)  1(노)  2(좌)  3(초)
+
+// light_integration_mode: event_user(0)참고
+// 위 변수를 바꾸고 event_user(0)으로 반영한다.
+// 바꾸기 전 event_user(1)을 이용해 파란불과 좌회전을 노란불로 만들 수 있다.
+// 0->2->1->3->4->
+
+Mouse Event for Left Pressed:
+
+execute code:
+
+if (image_blend = c_white) {
+    /* 중복 시 초기화    
+    if (instance_number(o_tool_traffic) >= 1) {
+        with (o_tool_traffic)
+            instance_destroy();
+        with (o_road_4)
+            image_blend = c_white;
+    }
+    */
+    if (instance_number(o_tool_traffic) <= 0) {
+        // 선택됨
+        image_blend = c_gray;
+        tmp = instance_create(x+350 - 100,y+350 - 100,o_tool_traffic);
+        tmp.object_id = id;
+    }
+}
+else {
+    image_blend = c_white;
+}
+
+Other Event: User Defined 0:
+
+execute code:
+
+// 반영
+switch (light_integration_mode) {
+case 0:
+    // 상 직&좌
+    t1.image_index = 0;
+    t2.image_index = 0;
+    t3.image_index = 0;
+    t4.image_index = 2;
+    break;
+case 1:
+    // 좌 직&좌
+    t1.image_index = 2;
+    t2.image_index = 0;
+    t3.image_index = 0;
+    t4.image_index = 0;
+    break;
+case 2:
+    // 우 직&좌
+    t1.image_index = 0;
+    t2.image_index = 0;
+    t3.image_index = 2;
+    t4.image_index = 0;
+    break;
+case 3:
+    // 하 직&좌
+    t1.image_index = 0;
+    t2.image_index = 2;
+    t3.image_index = 0;
+    t4.image_index = 0;
+    break;
+}
+
+Draw Event:
+
+execute code:
+
+draw_self();
+
+// light_mode: 배열(왼쪽, 아래, 오른쪽, 위쪽 순)
+// 0(빨)  1(노)  2(좌)  3(초)
+
+______________________________________________________
+
+Information about object: o_road_3
+Sprite: s_road
+Solid: false
+Visible: true
+Depth: 10
+Persistent: false
+Parent: o_road_parent
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+image_speed = 0;
+image_index = 1;
+
+______________________________________________________
+
+Information about object: o_road_0
+Sprite: s_road
+Solid: false
+Visible: true
+Depth: 10
+Persistent: false
+Parent: o_road_parent
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+image_speed = 0;
+image_index = 2;
+
+______________________________________________________
+
+Information about object: o_draw_solo
+Sprite: 
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+// 전역변수 대체
+car_id = 0;
+step = 0;
+
+// 하드코딩 방지
+road_width = sprite_get_width(s_road);
+car_width = sprite_get_width(s_car);
+
+line_x[0] = 138;
+line_x[1] = 162;
+line_x[2] = road_width - 162;
+line_x[3] = road_width - 138;
+
+line_y[0] = 138;
+line_y[1] = 162;
+line_y[2] = 188;
+line_y[3] = road_width - 138;
+
+// 사거리
+instance_create(0,0,o_road_4); //왼쪽 1차선에
+
+// 기록
+if file_exists("test.ini")
+    file_delete("test.ini");
+    
+ini_open("test.ini");
+
+Step Event:
+
+execute code:
+
+var __tmp = string(step);
+with (o_car_universial) {
+    ini_write_string(__tmp, string(car_id), string(round(x)) + "," + string(round(y)));
+}
+step += 1;
+
+/*
+with(object1)
+{__variable+=variable;}
+show_debug_message(__variable);
+*/
+
+Mouse Event for Glob Left Pressed:
+
+execute code:
+
+// 좌회전
+if sprite_region(s_btn_cars,room_width/5,room_height-64) {
+    with (instance_create(0,line_y[2],o_car_universial)) {
+        state_where = 0;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[2],road_width,o_car_universial)) {
+        state_where = 2;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[1],o_car_universial)) {
+        state_where = 4;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[1],0,o_car_universial)) {
+        state_where = 6;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+}
+// 우회전
+else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
+    with (instance_create(0,line_y[3],o_car_universial)) {
+        state_where = 1;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[3],road_width,o_car_universial)) {
+        state_where = 3;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[0],o_car_universial)) {
+        state_where = 5;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[0],0,o_car_universial)) {
+        state_where = 7;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+}
+// 직진
+else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
+    with (instance_create(0,line_y[2],o_car_universial)) {
+        state_where = 0;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[2],road_width,o_car_universial)) {
+        state_where = 2;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[1],o_car_universial)) {
+        state_where = 4;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[1],0,o_car_universial)) {
+        state_where = 6;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    
+    car_id += 1;
+    with (instance_create(0,line_y[3],o_car_universial)) {
+        state_where = 1;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[3],road_width,o_car_universial)) {
+        state_where = 3;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[0],o_car_universial)) {
+        state_where = 5;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[0],0,o_car_universial)) {
+        state_where = 7;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+}
+else if sprite_region(s_btn_cars,room_width*4/5,room_height-64) {
+    room_goto_previous();
+}
+else if sprite_region(s_btn_cars,room_width-150,room_height-150) {
+    ini_close();
+    game_end();
+}
+
+Draw Event:
+
+execute code:
+
+draw_sprite(s_btn_cars,0,room_width/5,room_height-64);
+draw_sprite(s_btn_cars,1,room_width*2/5,room_height-64);
+draw_sprite(s_btn_cars,2,room_width*3/5,room_height-64);
+draw_sprite(s_btn_cars,3,room_width*4/5,room_height-64);
+draw_sprite(s_btn_cars,4,room_width-150,room_height-150);
+
+draw_set_color(c_red);
+draw_text(room_width / 2,room_height / 2, step);
+
+______________________________________________________
+
+Information about object: o_traffic_light
+Sprite: s_light
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+image_speed = 0;
+
+______________________________________________________
+
+Information about object: o_draw
+Sprite: 
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+// 전역변수 대체
+car_id = 0;
+step = 0;
+
+// 입력받음
+//road_xmax = 5;
+//road_ymax = 4;
+
+view_shake = 0;
+view_zoom = 1;
+track_mode = 0;
+
+// 하드코딩 방지
+road_width = sprite_get_width(s_road);
+car_width = sprite_get_width(s_car);
+
+line_x[0] = 138;
+line_x[1] = 162;
+line_x[2] = road_width - 162;
+line_x[3] = road_width - 138;
+
+line_y[0] = 138;
+line_y[1] = 162;
+line_y[2] = 188;
+line_y[3] = road_width - 138;
+
+monitor_width = 1280;
+monitor_height = 720;
+
+// 기록
+if file_exists("test.ini")
+    file_delete("test.ini");
+    
+ini_open("test.ini");
+
+Alarm Event for alarm 0:
+
+execute code:
+
+/*
+    state_where: 어디서 시작했는지(누적) ( 0:왼쪽  1:아래  2:오른쪽  3:위쪽 )
+    state_will: 어디로 갈 것인지 
+    init_spd: 해당 차량의 최대속도
+*/
+// 좌회전
+if sprite_region(s_btn_cars,room_width/5,room_height-64) {
+    with (instance_create(0,line_y[2],o_car_universial)) {
+        state_where = 0;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[2],road_width,o_car_universial)) {
+        state_where = 1;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[1],o_car_universial)) {
+        state_where = 2;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[1],0,o_car_universial)) {
+        state_where = 3;
+        state_will = 0;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+}
+// 우회전
+else if sprite_region(s_btn_cars,room_width*2/5,room_height-64) {
+    with (instance_create(0,line_y[3],o_car_universial)) {
+        state_where = 0;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[3],road_width,o_car_universial)) {
+        state_where = 1;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[0],o_car_universial)) {
+        state_where = 2;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[0],0,o_car_universial)) {
+        state_where = 3;
+        state_will = 2;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+}
+// 직진
+else if sprite_region(s_btn_cars,room_width*3/5,room_height-64) {
+    with (instance_create(0,line_y[2],o_car_universial)) {
+        state_where = 0;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[2],road_width,o_car_universial)) {
+        state_where = 1;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[1],o_car_universial)) {
+        state_where = 2;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[1],0,o_car_universial)) {
+        state_where = 3;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(0,line_y[3],o_car_universial)) {
+        state_where = 0;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[3],road_width,o_car_universial)) {
+        state_where = 1;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(road_width,line_y[0],o_car_universial)) {
+        state_where = 2;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+    with (instance_create(line_x[0],0,o_car_universial)) {
+        state_where = 3;
+        state_will = 1;
+        init_spd = 1;
+        car_id = o_draw_solo.car_id;
+    }
+    car_id += 1;
+}
+
+Step Event:
+
+execute code:
+
+var __tmp = string(step);
+if (step % 30 == 0) {
+    with (o_car_universial) {
+        ini_write_string(__tmp, string(car_id), string(round(x)) + "," + string(round(y)));
+    }
+}
+step += 1;
+
+if (instance_number(o_car_universial) < car_max) {
+    event_user(0);
+}
+
+
+// Move
+spd = 20;
+if (keyboard_check(vk_left))
+    x -= spd;
+if (keyboard_check(vk_right))
+    x += spd;
+if (keyboard_check(vk_up))
+    y -= spd;
+if (keyboard_check(vk_down))
+    y += spd;
+if (keyboard_check(vk_enter))
+    view_shake = 30;
+
+// 왼쪽 위로 벗어나는 것 방지
+if (x < 640)
+    x = 640;
+if (y < 360)
+    y = 360;
+    
+// 오른쪽 아래로 벗어나는 것 방지
+    
+// View - smooth follow
+if (track_mode == 0) {
+view_xview[0] += ((x-640)-view_xview[0]) / 12 + choose(view_shake,-view_shake);
+view_yview[0] += ((y-360)-view_yview[0]) / 12 + choose(view_shake,-view_shake);
+}
+else {
+
+}
+
+// View - 확대축소, shake
+view_wview[0] += (1280 * view_zoom - view_wview[0]) / 6;
+view_hview[0] = 0.5625 * view_wview[0];
+
+if (view_shake>1)  {view_shake -= view_shake/6;}
+else    {view_shake = 0;}
+
+Mouse Event for Glob Left Pressed:
+
+execute code:
+
+if mouse_region(view_xview[0]+20*view_zoom, view_yview[0]+115*view_zoom, view_xview[0]+155*view_zoom, view_yview[0]+142*view_zoom) {
+    ini_close();
+    show_message("저장되었습니다!");
+    game_end();
+}
+else if mouse_region(view_xview[0]+20*view_zoom, view_yview[0]+149*view_zoom, view_xview[0]+155*view_zoom, view_yview[0]+175*view_zoom) {
+    list_will[0] = 0;
+    list_will[1] = 2;
+    list_will[2] = 1;
+    list_will[3] = 1;
+    
+    if (em_x > 0)
+        i = 3; // 직2
+    else
+        i = 2; // 우
+
+    // 왼쪽에서
+    xx = 0;
+    list[0] = line_y[2]; list[2] = list[0];
+    list[1] = line_y[3]; list[3] = list[1];
+    xx = 0;
+    yy = list[i];
+    where = 0;
+    
+    if (collision_circle(xx,yy,12,o_car_parents, 10,0) == -4) {
+        obj = instance_create(xx,yy,o_car_user);
+        if (i == 0 || i == 2)
+            obj.state_where = where;
+        else
+            obj.state_where = where + 1;
+        obj.state_will = list_will[i];
+        obj.init_spd = random_range(1,3);
+    }
+    
+    obj.em_x = em_x - 1;
+    obj.em_y = em_y - 2;
+    
+    if i == 3
+        obj.em_x -= 1;
+    else
+        obj.em_y -= 1;
+    
+    obj.iter_max = em_x + em_y - 2;
+    obj.iter_now = 1;
+    
+    with (o_tool_traffic)
+        instance_destroy();
+    
+}
+
+Mouse Event for Mouse Wheel Up:
+
+execute code:
+
+view_zoom -= 0.05;
+
+Mouse Event for Mouse Wheel Down:
+
+execute code:
+
+view_zoom += 0.05;
+
+Other Event: User Defined 0:
+
+execute code:
+
+list_will[0] = 0;
+list_will[1] = 2;
+list_will[2] = 1;
+list_will[3] = 1;
+
+//lbrt = 2; // 어디서 생성할 것인가: 0(좌), 1(하), 2(우), 3(위)
+i = irandom(3); // 어느 방향으로 갈 것인가: 0(좌) 1(우) 2(직1) 3(직2)
+
+for (lbrt = 0; lbrt < 4; lbrt += 1) {        
+    switch (lbrt) {
+    case 0: // 왼쪽에서 (좌, 우, 직, 직2)
+        xx = 0;
+        list[0] = line_y[2]; list[2] = list[0];
+        list[1] = line_y[3]; list[3] = list[1];
+        xx = 0;
+        yy = list[i] + road_width * irandom(road_ymax-1);
+        where = 0;
+        break;
+    case 1: // 아래쪽에서 - special
+        list[0] = line_x[2]; list[2] = list[0];
+        list[1] = line_x[3]; list[3] = list[1];
+        xx = list[i] + road_width * irandom(road_xmax-1);
+        yy = road_width * road_ymax;
+        where = 2;
+        break;
+    case 2: // 오른쪽에서 - special
+        list[0] = line_y[1]; list[2] = list[0];
+        list[1] = line_y[0]; list[3] = list[1];
+        xx = road_width * road_xmax;
+        yy = list[i] + road_width * irandom(road_ymax-1);
+        where = 4;
+        break;
+    case 3: // 위쪽에서
+        list[0] = line_x[1]; list[2] = list[0];
+        list[1] = line_x[0]; list[3] = list[1];
+        xx = list[i] + road_width * irandom(road_xmax-1);
+        yy = 0;
+        where = 6;
+    }
+    if (collision_circle(xx,yy,12,o_car_parents, 10,0) == -4) {
+        obj = instance_create(xx,yy,o_car_universial);
+        if (i == 0 || i == 2)
+            obj.state_where = where;
+        else
+            obj.state_where = where + 1;
+        obj.state_will = list_will[i];
+        obj.init_spd = random_range(1,3);
+        obj.car_id = car_id;
+        car_id += 1;
+    }
+}
+
+Draw GUI Event:
+
+execute code:
+
+// 스텝 표시
+draw_sprite_ext(s_tool_system,0,0,0,1,1,0,c_white,0.7);
+
+draw_set_alpha(1)
+draw_set_colour(c_dkgray);
+draw_set_halign(fa_left);
+draw_set_valign(fa_middle);
+draw_text(84,43,string(step));
+draw_text(117,78,string(instance_number(o_car_universial)));
+
+Key Press Event for F5 Key:
+
+execute code:
+
+game_restart();
+
+Key Press Event for F6 Key:
+
+execute code:
+
+room_restart();
+
+______________________________________________________
+
+Information about object: o_tool_traffic
+Sprite: tool_traffic
+Solid: false
+Visible: true
+Depth: 0
+Persistent: false
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+// 받는 정보
+// object_id
+
+// 변수
+wish = -1;
+
+image_speed = 0;
+image_index = 0;
+
+Alarm Event for alarm 1:
+
+execute code:
+
+instance_destroy();
+
+Mouse Event for Left Pressed:
+
+execute code:
+
+// 위
+if (mouse_region(x+64,y+76,x+93,y+104)) {
+    wish = 3;
+    event_user(0);    
+}
+// 왼쪽
+else if (mouse_region(x+38,y+118,x+68,y+143)) {
+    wish = 0;
+    event_user(0);
+}
+// 오른쪽
+else if (mouse_region(x+107,y+99,x+136,y+128)) {
+    wish = 1;
+    event_user(0);    
+}
+// 아래
+else if (mouse_region(x+83,y+144,x+112,y+171)) {
+    wish = 2;
+    event_user(0);    
+}
+// 취소
+else if (mouse_region(x+51,y+194,x+127,y+221)) {
+    object_id.image_blend = c_white;
+    instance_destroy();
+}
+
+Other Event: User Defined 0:
+
+execute code:
+
+image_index = 1;
+
+var __wish = wish;
+with (object_id) {
+    alarm[1] = 1;
+    light_integration_mode = __wish;
+}
+
+alarm[1] = room_speed * 3;
+
+with (o_road_4)
+    image_blend = c_white;
+
+______________________________________________________
+
+Information about object: o_setter
+Sprite: 
+Solid: false
+Visible: true
+Depth: 0
+Persistent: true
+Parent: 
+Children: 
+Mask: 
+
+No Physics Object
+Create Event:
+
+execute code:
+
+//road_xmax = 5;
+//road_ymax = 4;
+road_xmax = get_integer("가로 반복",4);
+if (road_xmax < 1) {
+    show_message("가로 반복은 1보다 작을 수 없습니다.");
+    game_end();
+}
+road_ymax = get_integer("세로 반복",2);
+if (road_ymax < 1) {
+    show_message("세로 반복은 1보다 작을 수 없습니다.");
+    game_end();
+}
+car_max = get_integer("도로 위 평균 차량 수(입력한 값보다 최대 3대가 초과할 수 있음)", 20);
+if (car_max < 1) {
+    show_message("도로 위 평균 차량 수는 1보다 작을 수 없습니다.");
+    game_end();
+}
+
+em_x = get_integer("긴급차량 목적지 x값(1이 맨 왼쪽)",1);
+if (road_xmax < em_x) {
+    show_message("긴급차량의 목적지는 도로의 가로반복, 세로반복을 벗어날 수 없습니다.");
+    game_end();
+}
+else if (em_x < 1) {
+    show_message("긴급차량의 목적지는 1보다 작을 수 없습니다.");
+    game_end();
+}
+em_y = get_integer("긴급차량 목적지 y값(1이 맨 위쪽)", 1);
+if (road_ymax < em_y) {
+    show_message("긴급차량의 목적지는 도로의 가로반복, 세로반복을 벗어날 수 없습니다.");
+    game_end();
+}
+else if (em_y < 1) {
+    show_message("긴급차량의 목적지는 1보다 작을 수 없습니다.");
+    game_end();
+}
+
+road_width = sprite_get_width(s_road);
+
+room_set_width(room0 ,road_width * road_xmax);
+room_set_height(room0 ,road_width * road_ymax);
+
+room_goto(room0);
+
+alarm[0] = 1;
+
+Alarm Event for alarm 0:
+
+execute code:
+
+tmp = instance_create(0,0,o_draw_multi);
+tmp.road_xmax = road_xmax;
+tmp.road_ymax = road_ymax;
+
+tmp = instance_create(0,0,o_draw);
+tmp.road_xmax = road_xmax;
+tmp.road_ymax = road_ymax;
+tmp.car_max = car_max;
+
+tmp.em_x = em_x;
+tmp.em_y = em_y;
+
+
+instance_destroy();
+
+______________________________________________________
