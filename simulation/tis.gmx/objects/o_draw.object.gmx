@@ -28,6 +28,7 @@
             <string>// 전역변수 대체
 car_id = 0;
 step = 0;
+highpass = 0;
 
 // 입력받음
 //road_xmax = 5;
@@ -268,9 +269,7 @@ if (track_mode == 0) {
 view_xview[0] += ((x-640)-view_xview[0]) / 12 + choose(view_shake,-view_shake);
 view_yview[0] += ((y-360)-view_yview[0]) / 12 + choose(view_shake,-view_shake);
 }
-else {
 
-}
 
 // View - 확대축소, shake
 view_wview[0] += (1280 * view_zoom - view_wview[0]) / 6;
@@ -373,8 +372,10 @@ else if mouse_region(view_xview[0]+20*view_zoom, view_yview[0]+149*view_zoom, vi
     if (collision_circle(xx,yy,12,o_car_parents, 10,0) == -4) {
         obj = instance_create(xx,yy,o_car_user);
         if (i == 0 || i == 2)
+            //obj.state_where = 0;
             obj.state_where = where;
         else
+            //obj.state_where = 0;
             obj.state_where = where + 1;
         obj.state_will = list_will[i];
         obj.init_spd = random_range(1,3);
@@ -545,6 +546,36 @@ draw_text(117,78,string(instance_number(o_car_universial)));
           <argument>
             <kind>1</kind>
             <string>game_restart();
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="9" enumb="13">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if (highpass == 0) {
+    highpass = 1;
+    show_message("긴급차량 자동 통과 모드가 켜졌습니다.");
+}
+else {
+    highpass = 0;
+    show_message("긴급차량 자동 통과 모드가 꺼졌습니다.");
+}
 </string>
           </argument>
         </arguments>

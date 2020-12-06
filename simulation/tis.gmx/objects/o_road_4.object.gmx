@@ -52,6 +52,36 @@ event_user(0);
 delay = room_speed * 5;
 delay_yellow = room_speed * 3;
 alarm[1] = delay;
+
+collipse_delay = 0;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="2" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if (place_meeting(x, y, o_car_user)) {
+    alarm[2] = 10;
+}
+else {
+    collipse_delay = 0;
+}
 </string>
           </argument>
         </arguments>
@@ -153,6 +183,43 @@ alarm[1] = delay;
 // 위 변수를 바꾸고 event_user(0)으로 반영한다.
 // 바꾸기 전 event_user(1)을 이용해 파란불과 좌회전을 노란불로 만들 수 있다.
 // 0-&gt;2-&gt;1-&gt;3-&gt;4-&gt;
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
+    <event eventtype="4" ename="o_car_user">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>if (collipse_delay = 0 &amp;&amp; o_draw.highpass == 1) {
+    collipse_delay = 1;
+    
+    var __wish = other.state_where;
+    if (__wish == 0 || __wish == 1)
+        __wish = 0;
+    else
+        __wish = 3;
+    
+    if (light_integration_mode != __wish) {
+        alarm[1] = 1;
+        light_integration_mode = __wish;
+    }
+    alarm[2] = 10;
+}
 </string>
           </argument>
         </arguments>
