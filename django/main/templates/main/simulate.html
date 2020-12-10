@@ -1,0 +1,75 @@
+{% extends "main/navbar.html" %}
+{% load static %}
+
+{% block title %}시뮬레이션{% endblock %}
+
+{% block head %}
+    <!-- Custom JS-->
+    <script type="text/javascript" src="{% static 'Canvas.js' %}"></script>
+    <script type="text/javascript" src="{% static 'TrafficCar.js' %}"></script>
+    <script type="text/javascript" src="{% static 'TrafficLight.js' %}"></script>
+    <script type="text/javascript" src="{% static 'TrafficPoint.js' %}"></script>
+
+    <div class="container text-center">
+    <canvas id = "ShowSimulationCanvas"></canvas>
+    <canvas id = "ShowTrafficLightStateCanvas"></canvas>
+    <canvas id = "ConvertTrafficLightStateCanvas"></canvas>
+    </div>
+    <script>
+        function drawRect(ctx, x, y, width, height, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, width, height);
+        }
+
+        function drawCircle(ctx, point, color) {
+            ctx.beginPath();
+            ctx.arc(
+                point.x, point.y, 5,
+                0, Math.PI * 2,
+                true
+            );
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+        
+        function movePoint(ctx, movePoint, rotatePoint) {
+            console.log(movePoint.x, movePoint.y);
+
+            if(movePoint.x < 200) {
+                movePoint.addNowPosition(1, 0);
+            } else {
+                if(movePoint.y > 200) {
+                    movePoint.rotatePosition(rotatePoint, -Math.PI / 24);
+                } else {
+                    movePoint.addNowPosition(0, -1);
+                }
+            }
+            
+            drawCircle(ctx, movePoint, "rgb(255, 0, 0)");
+        }
+
+        var point             = new TrafficPoint(0, 250);
+        var rotate            = new TrafficPoint(200, 200);
+        var simulationCanvas  = new Canvas("ShowSimulationCanvas", 500, 500, "rgb(255, 250, 250)", true, "rgb(100, 100, 100)");
+
+        drawRect(simulationCanvas.canvasContext, 0, 0, 200, 200, "rgb(200, 200, 200)");
+        drawRect(simulationCanvas.canvasContext, 300, 0, 200, 200, "rgb(200, 200, 200)");
+        drawRect(simulationCanvas.canvasContext, 0, 300, 200, 200, "rgb(200, 200, 200)");
+        drawRect(simulationCanvas.canvasContext, 300, 300, 200, 200, "rgb(200, 200, 200)");
+            
+        drawCircle(simulationCanvas.canvasContext, point, "rgb(255, 0, 0)");
+
+        var init = function() {
+            movePoint(simulationCanvas.canvasContext, point, rotate);
+        };
+        
+        setInterval(
+            init,
+            100
+        );
+    </script>
+{% endblock %}
+
+{% block body %}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "main/navbar.html" %}
+{% load static %}
+
+{% block title %}TIS{% endblock %}
+
+{% block body %}
+<section class="container">
+    {% include "main/simulationModal.html" %}
+    {% include "main/caculateModal.html" %}
+    {% include "main/card.html" %}
+    <style>
+        .rows {
+            display: flex;
+        }
+        .cols {
+            width: 100px;
+            height: 100px;
+        }
+
+        .game-board {
+            width: 900px;
+            margin: 0 auto;
+        }
+        .rows {
+            display: flex;
+        }
+        .cols {
+            width: 100px;
+            height: 100px;
+        }
+        .cols:nth-child(odd) {
+            background-color:gray;
+        }
+        .rows:nth-child(odd) {
+            background-color:gray;
+        }
+        .cols:hover {
+            background-color:#2574D0;
+        }
+    </style>
+    
+    <div class="game-board">
+        {% for tr in trs %}
+        
+        <div class="rows">
+            {% for td in tds %}
+            <div class="cols">
+                <span></span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

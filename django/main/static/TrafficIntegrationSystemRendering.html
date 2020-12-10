@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Traffic Integration System</title>
+    <canvas id = "ShowSimulationCanvas"></canvas>
+    <canvas id = "ShowTrafficStateCanvas"></canvas>
+    <script src = "Canvas.js"></script>
+    <script src = "TrafficPoint.js"></script>
+    <script src = "TrafficLight.js"></script>
+    <script src = "TrafficRoad.js"></script>
+    <script src = "TrafficRendering.js"></script>
+    <script src = "InitTrafficSimulationCanvas.js"></script>
+    <script src = "InitTrafficSimulationWorld.js"></script>
+    <script src = "DrawTrafficSimulation.js"></script>
+    <script>
+        DrawTrafficRoadInShowCanvas();
+
+        function DrawSpecialTrafficRoad(e) {
+            var x = e.clientX;
+            var y = e.clientY;
+            console.log(x, y);
+
+            for(var rows = 0; rows < 9; ++rows) {
+                for(var cols = 0; cols < 9; ++cols) {
+                    var xMin = cols * simulationRoadSize;
+                    var xMax = (cols + 1) * simulationRoadSize;
+                    var yMin = rows * simulationRoadSize;
+                    var yMax = (rows + 1) * simulationRoadSize;
+
+                    if((xMin < x && x < xMax) && (yMin < y && y < yMax))
+                    {
+                        ClearAllCanvas();
+                        DrawTrafficRoadInShowCanvas();
+                        DrawTrafficRoadInStateCanvas(rows, cols);
+                        return;
+                    }
+                }
+            }
+        }
+
+        simulationCanvas.htmlCanvas.onmousemove = DrawSpecialTrafficRoad;
+        /*
+        var target = document.getElementById("ShowSimulationCanvas");
+        target.addEventListener(
+            "mousemove",
+            DrawSpecialTrafficRoad(event)
+        );
+        */
+    </script>
+</head>
+<body>
+</body>
+</html>
